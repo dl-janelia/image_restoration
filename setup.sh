@@ -2,7 +2,7 @@
 
 # create environment
 ENV="05_image_restoration"
-conda create -y -n "$ENV" python=3.10
+conda create -y -n "$ENV" python=3.11
 conda activate "$ENV"
 
 # check that the environment was activated
@@ -24,6 +24,7 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     # Clone the extra repositories
     git clone https://github.com/krulllab/COSDD.git 03_COSDD/COSDD
     pip install -U tensorboard
+    pip install careamics_portfolio
 fi
 
 # Download the data
@@ -35,14 +36,14 @@ else
     echo "CARE, N2V + N2N data already exists, skipping download."
 fi
 
-cd 03_COSDD/
 # COSDD
+cd 03_COSDD/
 if [ ! -d "checkpoints" ]; then
     echo "Adding pretrained checkpoint..."
     mkdir checkpoints
 fi
 cd checkpoints/
 if [ ! -d "mito-pretrained" ]; then
-    cp -r /mnt/efs/aimbl_2025/data/mito-pretrained .
+    cp -r /mnt/efs/aimbl_2025/data/mito-pretrained . # FIXME: this is not there...
 fi
 cd ../../
