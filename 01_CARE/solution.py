@@ -3,7 +3,9 @@
 # %% [markdown] tags=[]
 # # Content-aware image restoration
 #
-# Fluorescence microscopy is constrained by the microscope's optics, fluorophore chemistry, and the sample's photon tolerance. These constraints require balancing imaging speed, resolution, light exposure, and depth. CARE demonstrates how Deep Learning can extend the range of biological phenomena observable by microscopy when any of these factor becomes limiting.
+# Fluorescence microscopy is constrained by the microscope's optics, fluorophore chemistry, and the sample's photon tolerance. 
+# These constraints require balancing imaging speed, resolution, light exposure, and depth. 
+# CARE demonstrates how Deep Learning can extend the range of biological phenomena observable by microscopy when any of these factor becomes limiting.
 #
 # **Reference**: Weigert, et al. "Content-aware image restoration: pushing the limits of fluorescence microscopy." Nature methods 15.12 (2018): 1090-1097. doi:[10.1038/s41592-018-0216-7](https://www.nature.com/articles/s41592-018-0216-7)
 #
@@ -11,7 +13,10 @@
 # %% [markdown] tags=[]
 # ### CARE
 #
-# In this first exercise we will train a CARE model for a 2D denoising task. CARE stands for Content-Aware image REstoration, and is a supervised method in which we use pairs of degraded and high quality images to train a particular task. The original paper demonstrated improvement of image quality on a variety of tasks such as image restoration or resolution improvement. Here, we will apply CARE to denoise images acquired at low laser power in order to recover the biological structures present in the data!
+# In this first exercise we will train a CARE model for a 2D denoising task. 
+# CARE stands for Content-Aware image REstoration, and is a supervised method in which we use pairs of degraded and high quality images to train a particular task. 
+# The original paper demonstrated improvement of image quality on a variety of tasks such as image restoration or resolution improvement. 
+# Here, we will apply CARE to denoise images acquired at low laser power in order to recover the biological structures present in the data!
 #
 # <p align="center">
 #     <img src="nb_data/img_intro.png" alt="Denoising task" class="center"> 
@@ -45,7 +50,9 @@
 # ![image](nb_data/extensions.png)
 #
 # 2) Search Tensorboard and install the extension published by Microsoft.
-# 3) Set the workspace interpreter to the `05_image_restoration` environment. To do this press `Ctrl/Cmd + Shift + P` and search for `Python: Select Interpreter`. Then select the interpreter called `05_image_restoration`.
+# 3) Set the workspace interpreter to the `05_image_restoration` environment. 
+# To do this press `Ctrl/Cmd + Shift + P` and search for `Python: Select Interpreter`.
+# Then select the interpreter called `05_image_restoration`.
 # </div>
 
 
@@ -71,11 +78,14 @@ from dlmbl_unet import UNet
 #
 # ## Part 1: Set-up the data
 #
-# CARE is a fully supervised algorithm, therefore we need image pairs (noisy & clean) for training. In practice this is best achieved by acquiring each image twice, once with short exposure time or low laser power to obtain a noisy low-SNR (signal-to-noise ratio) image, and once with high SNR.
+# CARE is a fully supervised algorithm, therefore we need image pairs (noisy & clean) for training. 
+# In practice this is best achieved by acquiring each image twice, once with short exposure time or low laser power to obtain a noisy low-SNR (signal-to-noise ratio) image, and once with high SNR.
 #
-# Here, we will be using high SNR images of Human U2OS cells taken from the Broad Bioimage Benchmark Collection ([BBBC006v1](https://bbbc.broadinstitute.org/BBBC006)). The low SNR images were created by synthetically adding strong read-out and shot noise, and applying pixel binning of 2x2, thus mimicking acquisitions at a very low light level.
+# Here, we will be using high SNR images of Human U2OS cells taken from the Broad Bioimage Benchmark Collection ([BBBC006v1](https://bbbc.broadinstitute.org/BBBC006)). 
+# The low SNR images were created by synthetically adding strong read-out and shot noise, and applying pixel binning of 2x2, thus mimicking acquisitions at a very low light level.
 #
-# Since the image pairs were synthetically created in this example, they are already aligned perfectly. Note that when working with real paired acquisitions, the low and high SNR images are not pixel-perfect aligned so they would often need to be co-registered before training a CARE model.
+# Since the image pairs were synthetically created in this example, they are already aligned perfectly. 
+# Note that when working with real paired acquisitions, the low and high SNR images are not pixel-perfect aligned so they would often need to be co-registered before training a CARE model.
 # 
 
 # %% [markdown] tags=[]
@@ -137,7 +147,8 @@ print(f"Number of test files: {len(test_image_files)}")
 # %% [markdown] tags=[]
 # ### Patching function
 #
-# In the majority of cases microscopy images are too large to be processed at once and need to be divided into smaller patches. We will define a function that takes image and target arrays and extracts **random** (paired) patches from them.
+# In the majority of cases microscopy images are too large to be processed at once and need to be divided into smaller patches. 
+# We will define a function that takes image and target arrays and extracts **random** (paired) patches from them.
 #
 # The method is a bit scary because accessing the whole patch coordinates requires some magical python expressions. 
 #
@@ -220,7 +231,8 @@ def create_patches(
 # %% [markdown] tags=[]
 # ### Create patches
 #
-# To train the network, we will use patches of size 128x128. We first need to load the data, stack it and then call our patching function.
+# To train the network, we will use patches of size 128x128. 
+# We first need to load the data, stack it and then call our patching function.
 
 # %% tags=[]
 # Load images from files and stack them into arrays
@@ -302,9 +314,13 @@ plt.tight_layout()
 # %% [markdown] tags=[]
 # ### Dataset class
 #
-# In modern deep learning libraries, the data is wrapped into a class called a `Dataset`. Instances of that class are then used to extract the patches before feeding them to the network.
+# In modern deep learning libraries, the data is wrapped into a class called a `Dataset`. 
+# Instances of that class are then used to extract the patches before feeding them to the network.
 #
-# Here, the class will be wrapped around our pre-computed stacks of patches. Our `CAREDataset` class is built on top of the PyTorch `Dataset` class (we say it "inherits" from `Dataset`, the "parent" class). That means that it has some function hidden from us that are defined in the PyTorch repository, but that we also need to implement specific pre-defined methods, such as `__len__` and `__getitem__`. The advantage is that PyTorch knows what to do with a `Dataset` "child" class, since its behaviour is defined in the `Dataset` class, but we can do operations that are closely related to our own data in the method we implement.
+# Here, the class will be wrapped around our pre-computed stacks of patches. 
+# Our `CAREDataset` class is built on top of the PyTorch `Dataset` class (we say it "inherits" from `Dataset`, the "parent" class). 
+# That means that it has some function hidden from us that are defined in the PyTorch repository, but that we also need to implement specific pre-defined methods, such as `__len__` and `__getitem__`. 
+# The advantage is that PyTorch knows what to do with a `Dataset` "child" class, since its behaviour is defined in the `Dataset` class, but we can do operations that are closely related to our own data in the method we implement.
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-warning"><h3>Question: Normalization</h3>
@@ -456,7 +472,8 @@ def augment_batch(
 # %% [markdown] tags=[]
 # ### Defining the Dataset
 #
-# Here we're defining the basic pytorch dataset class that will be used to load the data. This class will be used to load the data and apply the normalization and augmentation functions to the data as it is loaded.
+# Here we're defining the basic pytorch dataset class that will be used to load the data. 
+# This class will be used to load the data and apply the normalization and augmentation functions to the data as it is loaded.
 #
 
 
@@ -580,8 +597,8 @@ class CAREDataset(Dataset): # CAREDataset inherits from the PyTorch Dataset clas
             patch, target = augment_batch(patch=patch, target=target)
 
         # Normalize the patch
-        patch = normalize(patch, train_mean, train_std)
-        target = normalize(target, target_mean, target_std)
+        patch = normalize(patch, self.image_data_mean, self.image_data_std)
+        target = normalize(target, self.target_data_mean, self.target_data_std)
 
         return (
             patch[np.newaxis].astype(np.float32),
@@ -655,7 +672,7 @@ val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False)
 # %% [markdown] tags=[]
 # ### Instantiate the model
 #
-# We'll be using the model from the previous exercise, so we need to load the relevant module
+# We'll be using the model from the previous exercise, so we need to load the relevant module.
 
 # %% tags=[]
 # Load the model
@@ -829,7 +846,8 @@ test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 #
 # CARE is an image to image model. If we feed it normalized images and use normalized targets for training, it will output normalized images.
 # Therefore, we can map the model output back to the original intensity range by reverting the normalization operation, i.e., **denormalizing**.
-# Define the denormalization function. It should take a normalized image (e.g., the model output), the mean and the standard deviation over the dataset and return the denormalized image.
+# Define the denormalization function. 
+# It should take a normalized image (e.g., the model output), the mean and the standard deviation over the dataset and return the denormalized image.
 #
 # *hint* : You just need to invert the normalization formula you defined above!
 # </div>
@@ -888,7 +906,9 @@ def denormalize(
 # %% [markdown]
 # <div class="alert alert-block alert-info"><h3>Task 7: Predict using the correct mean/std</h3>
 #
-# In Part 1 we normalized the inputs and the targets before feeding them into the model. This means that the model will output normalized clean images. However, we'd like them to be on the same scale as the real clean images.
+# In Part 1 we normalized the inputs and the targets before feeding them into the model. 
+# This means that the model will output normalized clean images. 
+# However, we'd like them to be on the same scale as the real clean images.
 #
 # Recall the variables storing the dataset statistics we used to normalize the data in Part 1, and use them denormalize the output of the model.
 # Should you use the mean and std of the input images or the target images?
@@ -962,6 +982,7 @@ plt.tight_layout()
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-info"><h3>Task 8: Choose your next exercise</h3>
 #
+# TODO: update, in case we make N2V mandatory and remove COSDD
 # You are free to choose which deep learning-based image restoration method you want to learn about next.
 # To learn more about denoising, you can choose from [02_Noise2Void](../02_Noise2Void/exercise.ipynb) or [03_COSDD](../03_COSDD/exercise.ipynb).
 # Or, to learn about computational unmixing, try [04_DenoiSplit](../04_DenoiSplit/exercise.ipynb).
@@ -994,3 +1015,5 @@ plt.tight_layout()
 # <img src="./../04_MicroSplit/imgs/Fig1_b.png">
 #
 # </div>
+
+# %%
