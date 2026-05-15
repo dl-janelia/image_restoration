@@ -38,23 +38,6 @@
 #   Set your python kernel to <code>05_image_restoration</code>
 # </div>
 
-# %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 0: Install Tensorboard</h3>
-#
-# We'll monitor the training of all models in 05_image_restoration using Tensorboard. 
-# This is a program that plots the training and validation loss of networks as they train, and can also show input/output image pairs.
-# Follow these steps to enable Tensorboard:
-#
-# 1) Open the extensions panel in VS Code. Look for this icon. 
-#
-# ![image](nb_data/extensions.png)
-#
-# 2) Search Tensorboard and install the extension published by Microsoft.
-# 3) Set the workspace interpreter to the `05_image_restoration` environment. 
-# To do this press `Ctrl/Cmd + Shift + P` and search for `Python: Select Interpreter`.
-# Then select the interpreter called `05_image_restoration`.
-# </div>
-
 
 # %% tags=[]
 import tifffile
@@ -723,13 +706,21 @@ optimizer = torch.optim.Adam(
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-info"><h3>Task 5: Launch Tensorboard</h3>
 #
-# As we mentioned above, we'll monitor the training using Tensorboard. 
-# Follow these steps to launch Tensorboard to monitor your training run:
-
-# 1) Start training. Run the cell below to begin training the model and generating logs.
-# 2) Once training is started, open the command palette (ctrl+shift+p), search for `Python: Launch Tensorboard` and hit enter.
-# 3) When prompted, select "Select another folder" and enter the path to the `01_CARE/runs/` directory.
+# We'll monitor the training of all models in 05_image_restoration using Tensorboard.
+# This is a program that plots the training and validation loss of networks as they train,
+# and can also show input/output image pairs.
 #
+# Follow these steps to launch Tensorboard:
+#
+# 1) Start training by running the cell below.
+# 2) Open a terminal and run:
+#
+# ```bash
+# conda activate 05_image_restoration
+# tensorboard --logdir 01_CARE/runs/
+# ```
+#
+# 3) Open [http://localhost:6006](http://localhost:6006) in your browser (in VSCode a window with the link will pop up).
 # </div>
 
 # %% [markdown] tags=[]
