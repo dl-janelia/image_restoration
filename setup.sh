@@ -24,6 +24,7 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     # Clone the extra repositories
     git clone https://github.com/krulllab/COSDD.git 03_COSDD/COSDD
     pip install -U tensorboard
+    pip install "setuptools<=81"  # setuptools>=82 removes pkg_resources, required by tensorboard<=2.20
     pip install careamics_portfolio
     pip install tifffile matplotlib
 fi
