@@ -971,39 +971,18 @@ plt.tight_layout()
 # </div>
 
 # %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 8: Choose your next exercise</h3>
+# <div class="alert alert-block alert-info"><h3>Next exercise</h3>
 #
-# TODO: update, in case we make N2V mandatory and remove COSDD
-# You are free to choose which deep learning-based image restoration method you want to learn about next.
-# To learn more about denoising, you can choose from [02_Noise2Void](../02_Noise2Void/exercise.ipynb) or [03_COSDD](../03_COSDD/exercise.ipynb).
-# Or, to learn about computational unmixing, try [04_DenoiSplit](../04_DenoiSplit/exercise.ipynb).
 #
-# Notice that exercises have different levels of difficulty.
-# Choose one that matches your confidence level (or be brave and try something harder)!
-#
-# (EASY) [02_Noise2Void](../02_Noise2Void/exercise.ipynb) is a denoiser that is trained directly on (unpaired) noisy images in a self-supervised fashion. Meaning that, unlike CARE, we don't need any examples of clean images.
-# It's also relatively quick to train.
+# The next exercise will cover [02_Noise2Void](../02_Noise2Void/exercise.ipynb) (N2V), another denoising algorithm that is trained directly on (unpaired) noisy images in a self-supervised fashion. 
+# This means that, unlike CARE, we don't need any examples of clean images, making N2V way more practical for real-world applications.
+# It's also relatively easy and quick to train.
 # But there's a catch.
 # It relies on the assumption that the noise is unstructured.
 # Unstructured noise is uncorrelated over pixels, so has no streaky or line artifacts.
 # An example is shown below.
 #
 # <img src="./../02_Noise2Void/imgs/unstructured noise.png">
-#
-# (HARD) [03_COSDD](../03_COSDD/exercise.ipynb) is also a denoiser trained using unpaired noisy images, but it can handle a specific form of structure.
-# That structure is row correlation.
-# Row-correlated noise is common in scanning-based imaging techniques like point-scanning confocal microscopy, an example is shown below.
-# It can also be found when using sCMOS sensors.
-# The practical trade-off with N2V is that COSDD takes much longer to train.
-#
-# <img src="./../03_COSDD/resources/structured noise.png">
-#
-# (HARD) [04_MicroSplit](../04_MicroSplit/exercise.ipynb) is a computational multiplexing technique.
-# It uses deep learning to separate multiple superimposed cellular structures within a single fluorescent image channel, turning one fluorescent channel into multiple ones (up to 4 in our work).
-# Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
-# An example of splitting is shown below.
-# 
-# <img src="./../04_MicroSplit/imgs/Fig1_b.png">
 #
 # </div>
 

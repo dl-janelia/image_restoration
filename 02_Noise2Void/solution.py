@@ -429,3 +429,14 @@ ax[1].imshow(new_preds.squeeze(), cmap="gray")
 # %% [markdown] tags=[]
 # <hr style="height:2px;"><div class="alert alert-block alert-success"><h1>End of the exercise</h1>
 # </div>
+
+# %% [markdown] tags=[]
+# <div class="alert alert-block alert-info"><h3>Next exercise</h3>
+#
+# The next exercise is about [03_MicroSplit](../03_MicroSplit/exercise.ipynb), that is a computational multiplexing technique.
+# It uses a deep learning model to separate multiple superimposed cellular structures within a single fluorescent image channel, turning one fluorescent channel into multiple ones (up to 4 in published work).
+# Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
+# An example of splitting is shown below.
+# 
+# <img src="./../03_MicroSplit/imgs/Fig1_b.png">
+#

@@ -992,3 +992,16 @@ show_metrics(metrics_dict)
 # </div>
 #
 # <hr style="height:2px;">
+
+# <div class="alert alert-block alert-info"><h3>Next: Bonus exercise</h3>
+#
+# The next exercise is a bonus exercise as we don't expect you to reach to that point in the given time.
+# But, if you do and you want to keep going, you have the opportunity to work with [03_bonus_COSDD](../03_bonus_COSDD/exercise.ipynb).
+# COSDD is also a denoiser trained using unpaired noisy images: however, differently from N2V, it can handle structured noise.
+# Specifically, it can handle noise that is correlated along rows.
+# Row-correlated noise is common in scanning-based imaging techniques like point-scanning confocal microscopy, an example is shown below.
+# It can also be found when using sCMOS sensors.
+# The practical trade-off with N2V is that COSDD takes much longer to train as it uses the same architecture as MicroSplit, a Ladder VAE.
+#
+# <img src="./../04_bonus_COSDD/resources/structured noise.png">
+#
