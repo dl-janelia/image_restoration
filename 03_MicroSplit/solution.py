@@ -2,6 +2,8 @@
 # ruff: noqa: F811
 # %% [markdown] tags=[]
 # # MicroSplit: Semantic Unmixing of Fluorescent Microscopy Data
+
+# TODO: reduce dset size!!!
 #
 # In this notebook, you will work with MicroSplit, a deep learning-based computational multiplexing technique that allows imaging multiple cellular structures within a single fluorescent channel. The method enables imaging more cellular structures, imaging them faster, and at reduced overall light exposure.
 #
@@ -42,7 +44,7 @@
 # ***References:***
 # - VAE paper: [Kingma et al., Auto-Encoding Variational Bayes](https://arxiv.org/abs/1312.6114)
 # - LVAE paper: [Sønderby et al, Ladder Variational Autoencoders](https://arxiv.org/abs/1602.02282)
-# - MicroSplit paper: [Ashesh et al., Micro𝕊plit: Semantic Unmixing of Fluorescent Microscopy Data](https://www.biorxiv.org/content/10.1101/2025.02.10.637323v1)
+# - MicroSplit paper: [Ashesh et al., Micro𝕊plit: Semantic Unmixing of Fluorescent Microscopy Data](https://www.nature.com/articles/s41592-026-03082-1)
 
 # ***Additional resources:***
 # - For more information about LC, please check this paper where we first introduced the idea: [μSplit: efficient image decomposition for microscopy data](https://openaccess.thecvf.com/content/ICCV2023/papers/Ashesh_uSplit_Image_Decomposition_for_Fluorescence_Microscopy_ICCV_2023_paper.pdf), which enabled the network to understand the global spatial context around the input patch.
@@ -110,7 +112,9 @@ assert torch.cuda.is_available()
 torch.set_float32_matmul_precision('medium')
 
 # %% tags=[]
-ROOT_DIR = Path("/mnt/efs/aimbl_2025/data/05_image_restoration/MicroSplit_MBL_2025/")  # Path to the data folder
+# TODO: update once loaded on Janelia servers
+ROOT_DIR = Path("/group/jug/public_html/MicroSplit_MBL_2025")  # Path to the data folder
+
 
 # %% [markdown] tags=[]
 # # **Exercise 1**: Training MicroSplit
@@ -160,6 +164,7 @@ assert EXPOSURE_TIME in [2, 20, 500], "Exposure time must be one of [2, 20, 500]
 assert all([
     s in ["Nuclei", "Microtubules", "NucMembranes", "Centromeres"] for s in STRUCTURES
 ]), "Invalid structure selected. Choose among 'Nuclei', 'Microtubules', 'NucMembranes', 'Centromeres'."
+
 # %% tags=["solution"]
 # pick structures and exposure time
 STRUCTURES = ["Nuclei", "Microtubules"] # choose among "Nuclei", "Microtubules", "NucMembranes", "Centromeres"
@@ -271,7 +276,7 @@ plot_input_patches(dataset=train_dset, num_channels=len(STRUCTURES), num_samples
 # ## 1.2. Setup MicroSplit for training
 # In this section, we create all the configs for the upcoming model initialization and training run. Configs allow to group all the affine parameters in the same place (architecture, training, loss, etc. etc.) and offer automated validation of the input parameters to prevent the user from inputting wrong combinations.
 #
-# Notice that MicroSplit is being implemented in CAREamics library, therefore the API is quite similar to the one you (perhaps) saw for Noise2Void. 
+# Notice that MicroSplit is being implemented in CAREamics library, therefore the API is quite similar to the one you saw for Noise2Void. 
 
 # %% [markdown] tags=[]
 # <div class="alert alert-info"><h4><b>Task 1.2.</b></h4>
@@ -380,12 +385,12 @@ model = VAEModule(algorithm_config=experiment_config)
 # %% [markdown] tags=[]
 # ## 1.3. Train MicroSplit model
 #
-# In this section we will train out MicroSplit model using `lightning`. We have manually set the time limit to 20 minutes. This limit can be modified with the `max_time` argument.
+# In this section we will train out MicroSplit model using `lightning`. We have manually set the time limit to 10 minutes. This limit can be modified with the `max_time` argument.
 
 # %% tags=[]
 # create the Trainer
 trainer = Trainer(
-    max_time="00:00:25:00", # this is roughly the time to train for 3 epochs 
+    max_time="00:00:10:00", # this is roughly the time to train for 1.5 epochs
     max_epochs=training_config.num_epochs,
     accelerator="gpu",
     enable_progress_bar=True,
@@ -406,25 +411,20 @@ trainer.fit(
 
 # %% [markdown] tags=[]
 # **NOTE**: each training epoch should take approximately 7 minutes on our GPUs.
-# For the sake of time you can stop training after the 2nd or 3rd epoch... 
-# Results will not be as good, but you will still be able to evaluate the model and see how it works.
+# After only 10 minutes of training, results will not be so good, but you will still be able to evaluate the model and see how it works.
 # For reference, in our experiments we usually train MicroSplit for 50 or 100 epochs on similarly sized datasets,
 # which takes approximately between 6 and 12 hours on a single GPU.
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-info"><h5><b>Task 1.3: Visualize losses and metrics using Tensorboard</b></h5>
 #
-# Open Tensorboard in VS Code to monitor training.
-
-# You already did it for the 01_CARE exercise so you should know how to do it!
-# However, in case you need a reminder, here are the steps to follow:
+# Open Tensorboard in VS Code to monitor training as you did it for the `01_CARE` and `02_Noise2Void` exercises!
+# In this case, you have to open a terminal and run:
 #
-# 1) Open the extensions panel in VS Code.
-# 2) Search Tensorboard and install the extension published by Microsoft.
-# 3) Start training. Run the cell below to begin training the model and generating logs.
-# 3) Once training is started. Open the command palette (ctrl+shift+p), search for Python: Launch Tensorboard and hit enter.
-# 4) When prompted, select "Select another folder" and enter the path to the `04_MicroSplit/tb_logs` directory.
-# </div>
+# ```
+# conda activate 05_image_restoration
+# tensorboard --logdir 04_MicroSplit/tb_logs/
+# ```
 
 # %% [markdown] tags=[]
 # ## 1.4 Visualize predictions on validation data
@@ -444,7 +444,7 @@ trainer.fit(
 # **Answer**
 # 
 # The validation set can be used to: control the learning rate, decide when to stop training and tune the hyperparameters.
-# Therefore, even though we did not adjust the model's parameters to minimize validation loss, the model is still technically fit to the validation data.
+# Therefore, even though we did not adjust the model's parameters to minimize validation loss, the model is still technically fitted to the validation data.
 # Why? Because we usually use validation loss and metrics to make decisions about the model (e.g., hyperparameter tuning, when to stop training, etc.).
 # So our model would be biased towards performing well on the validation set.
 # To properly test generalisation ability, we need to evaluate on data that was not used at all during training, and that data would be our test set.
@@ -452,7 +452,7 @@ trainer.fit(
 # %% [markdown] tags=[]
 # Before proceeding with the evaluation, let's focus once more on how MicroSplit works.
 #
-# As we mentioned, MicroSplit uses a modified version of the Ladder Variational Autoencoder (LVAE) similarly to DivNoising, HDN, COSDD and other models you encountered during the course. 
+# As we mentioned, MicroSplit uses a modified version of the Ladder Variational Autoencoder (LVAE) similarly to other models you might have encountered during the course. 
 # This architecture, given an input patch, enables the generation of multiple outputs. Technically, this happens by sampling multiple different *latent vectors* in the latent space. 
 # In mathematical terms we say that "*MicroSplit is learning a full posterior of possible solutions*".
 #
@@ -769,19 +769,13 @@ fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 3, nrows * 3))
 for i, (h_start, w_start) in enumerate(rand_locations[:nrows]):
     ax[i, 0].imshow(inp[0, h_start : h_start + img_sz, w_start : w_start + img_sz])
     for j in range(ncols // 2):
-        # vmin = stitched_predictions[..., j].min()
-        # vmax = stitched_predictions[..., j].max()
         ax[i, 2 * j + 1].imshow(
-            tar[0, h_start : h_start + img_sz, w_start : w_start + img_sz, j],
-            # vmin=vmin,
-            # vmax=vmax,
+            tar[0, h_start : h_start + img_sz, w_start : w_start + img_sz, j]
         )
         ax[i, 2 * j + 2].imshow(
             stitched_predictions[
                 0, h_start : h_start + img_sz, w_start : w_start + img_sz, j
-            ],
-            # vmin=vmin,
-            # vmax=vmax,
+            ]
         )
 
 ax[0, 0].set_title("Primary Input")
@@ -792,6 +786,7 @@ for i in range(ncols // 2):  # 2 channel splitting
 # reduce the spacing between the subplots
 plt.subplots_adjust(wspace=0.03, hspace=0.03)
 clean_ax(ax)
+
 # %% tags=["solution"]
 # --- Insert here the crop size for visualization ---
 img_sz = 128
@@ -807,19 +802,13 @@ fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 3, nrows * 3))
 for i, (h_start, w_start) in enumerate(rand_locations[:nrows]):
     ax[i, 0].imshow(inp[0, h_start : h_start + img_sz, w_start : w_start + img_sz])
     for j in range(ncols // 2):
-        # vmin = stitched_predictions[..., j].min()
-        # vmax = stitched_predictions[..., j].max()
         ax[i, 2 * j + 1].imshow(
             tar[0, h_start : h_start + img_sz, w_start : w_start + img_sz, j],
-            # vmin=vmin,
-            # vmax=vmax,
         )
         ax[i, 2 * j + 2].imshow(
             stitched_predictions[
                 0, h_start : h_start + img_sz, w_start : w_start + img_sz, j
             ],
-            # vmin=vmin,
-            # vmax=vmax,
         )
 
 ax[0, 0].set_title("Primary Input")
@@ -848,19 +837,13 @@ nrows = 2
 fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5), constrained_layout=True)
 ax[0, 0].imshow(inp[0, y_start : y_start + crop_size, x_start : x_start + crop_size])
 for i in range(ncols - 1):
-    # vmin = stitched_predictions[..., i].min()
-    # vmax = stitched_predictions[..., i].max()
     ax[0, i + 1].imshow(
         tar[0, y_start : y_start + crop_size, x_start : x_start + crop_size, i],
-        # vmin=vmin,
-        # vmax=vmax,
     )
     ax[1, i + 1].imshow(
         stitched_predictions[
             0, y_start : y_start + crop_size, x_start : x_start + crop_size, i
         ],
-        # vmin=vmin,
-        # vmax=vmax,
     )
     ax[0, i + 1].set_title(f"Channel {i+1}", fontsize=15)
 
@@ -875,6 +858,7 @@ ax[1,ncols-1].yaxis.set_label_position("right")
 ax[1,ncols-1].set_ylabel("Predicted", fontsize=15)
 
 print("Here the crop you selected:")
+
 # %% tags=["solution"]
 # --- Pick coordinates of upper-left corner and crop size ---
 y_start = 750
@@ -889,19 +873,13 @@ nrows = 2
 fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5), constrained_layout=True)
 ax[0, 0].imshow(inp[0, y_start : y_start + crop_size, x_start : x_start + crop_size])
 for i in range(ncols - 1):
-    # vmin = stitched_predictions[..., i].min()
-    # vmax = stitched_predictions[..., i].max()
     ax[0, i + 1].imshow(
         tar[0, y_start : y_start + crop_size, x_start : x_start + crop_size, i],
-        # vmin=vmin,
-        # vmax=vmax,
     )
     ax[1, i + 1].imshow(
         stitched_predictions[
             0, y_start : y_start + crop_size, x_start : x_start + crop_size, i
         ],
-        # vmin=vmin,
-        # vmax=vmax,
     )
     ax[0, i + 1].set_title(f"Channel {i+1}", fontsize=15)
 
@@ -935,17 +913,23 @@ print("Here the crop you selected:")
 # *Hint2*: for VAE, reflect on the sampling happening in the latent space....
 
 # %% [markdown] tags=["solution"]
-# *Answers*
-# 
-# The receptive field of the CNN is limited, so predictions have to be over a tiled image.
-# CNNs require inputs to be padded at the sides to allow same-size convolutions.
-# This padding can lead to edge artifacts on each tile.
-# Stiching tiles back together will leave edge artifacts at the borders of tiles.
-# 
-# A VAE restores an image using random sampling in the latent space, leading to random restorations.
-# Each tile is therefore restored differently and won't match when stitched back together.
-# This can however be overcome by averaging many different restorations, cancelling out the randomness.
-# 
+# **Answer**
+#
+# Tiling artifacts in CNNs arise because predictions near tile borders are not made under the same conditions as predictions in the tile interior. 
+# For same-size convolutions, the network pads the tile boundaries. 
+# Therefore, output pixels close to the edge of a tile depend partly on artificial padding values instead of real image context. 
+# When two neighboring tiles are processed independently, their border predictions may be based on different artificial contexts, so the stitched image can show seams or discontinuities.
+
+# The severity depends on the model's receptive field: all pixels whose receptive field intersects a tile boundary are potentially affected. 
+# This is why overlapping tiles and discarding border predictions helps. 
+# The final stitched image should preferably keep only the central region of each tile, where the receptive field is fully supported by real image content.
+
+# For VAE-based models there is an additional source of inconsistency. 
+# The prediction is stochastic: each tile is reconstructed from samples drawn from a learned latent distribution. 
+# Adjacent tiles are sampled independently, so they may choose slightly different plausible explanations, intensity levels, textures, or structure assignments. 
+# Even if each tile is locally reasonable, the sampled predictions may not agree at tile boundaries. 
+# Averaging multiple samples, i.e. increasing `mmse_count`, reduces this stochastic mismatch.
+
 # </div>
 
 # %% [markdown] tags=[]
@@ -953,7 +937,7 @@ print("Here the crop you selected:")
 #
 # In this section you will perform a quantitative evaluation of MicroSplit unmixing performance using the provided function to compute metrics. In image restoration there are several commonly used metrics to quantitatively assess the goodness of a model's predictions. Clearly, different metrics focus on different aspects and provide different insights. Some metrics evaluate the ***pixel-wise similarity*** between images, while some other focus on higher-order features (e.g., brightness, contrast, ...) and, hence, we say they evaluate the ***perceptual similarity*** of images. Some commonly used metrics are:
 # - ***Pixel-wise similarity***: `Peak Signal-to-Noise Ratio (PSNR)`, `Pearson's Correlation Coefficient`.
-# - ***Perceptual similarity***: `Structural similarity index measure (SSIM)` with its multi-scale variant `(MS-SSIM)`, and our variant for microscopy `MicroSSIM` (paper: [link](https://arxiv.org/abs/2408.08747)) with its multi-scale variant `(MicroMS3IM)`, `Learned Perceptual Image Patch Similarity (LPIPS)`, `Fréchet Inception Distance (FID)`.
+# - ***Perceptual similarity***: `Structural similarity index measure (SSIM)` with its multi-scale variant `(MS-SSIM)`, and our variant for microscopy `MicroSSIM` (paper: [link](https://arxiv.org/abs/2408.08747)) with its multi-scale variant `(MicroMS3IM)`, `Learned Perceptual Image Patch Similarity (LPIPS)``.
 
 # %% [markdown] tags=[]
 # <div class="alert alert-info"><h4><b>Task 2.3: Compute metrics</b></h4>
@@ -1008,37 +992,3 @@ show_metrics(metrics_dict)
 # </div>
 #
 # <hr style="height:2px;">
-
-# %% [markdown] tags=[]
-# ## BONUS: visualize difference between samples
-#
-# Here we compute a pair of posterior samples, to see how they are different.
-
-# %% tags=[]
-imgsz = 3
-examplecount = 3
-ncols = 6
-nrows = stitched_predictions.shape[-1] * examplecount
-_, ax = plt.subplots(
-    figsize=(imgsz * ncols, imgsz * nrows),
-    ncols=ncols,
-    nrows=nrows,
-    constrained_layout=True,
-)
-
-show_sampling(test_dset, model, ax=ax[:3])
-show_sampling(test_dset, model, ax=ax[3:6])
-show_sampling(test_dset, model, ax=ax[6:9])
-
-# %% [markdown] tags=[]
-# <div class="alert alert-warning"><h4><b>Bonus Question</b></h4>
-#
-# How do you think we could measure the model's confidence using these samples?
-#
-# </div>
-
-# %% [markdown] tags=["solution"]
-# **Answer**
-#
-# Measuring the variance in each pixel would give a spatial map of the model's confidence across the images, with low variance indicating high confidence.
-#
