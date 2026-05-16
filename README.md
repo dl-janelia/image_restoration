@@ -31,16 +31,16 @@ An example is shown below.
 
 <img src="./02_Noise2Void/imgs/unstructured noise.png">
 
-The next exercise is about [4. MicroSplit](04_MicroSplit/exercise.ipynb).
+The next exercise is about [3. MicroSplit](03_MicroSplit/exercise.ipynb).
 MicroSplit is a deep learning algorithm that jointly performs computational unmixing and denoising.
 Specifically, it uses a VAE architecture to separate multiple superimposed cellular structures within a single fluorescent image channel, turning a single channel into as many as 4.
 Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
 An example of splitting is shown below.
 
-<img src="./04_MicroSplit/imgs/Fig1_b.png">
+<img src="./03_MicroSplit/imgs/Fig1_b.png">
 
 ## Bonus exercise
-If you've finished these exercises, have a look at [3. COSDD](03_COSDD/exercise.ipynb). 
+If you've finished these exercises, have a look at [4. COSDD](04_bonus_COSDD/exercise.ipynb). 
 In this exercise will introduce another denoiser that is trained using unpaired noisy images, but can handle a specific form of structure.
 That structure is row correlation.
 Row-correlated noise is common in scanning-based imaging techniques like point-scanning confocal microscopy.
