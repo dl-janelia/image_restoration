@@ -146,6 +146,16 @@ ax[1].title.set_text("Mask")
 
 # </div>
 
+# %% [markdown] tags=[]
+# <div class="alert alert-block alert-warning"><h3>NOTE: Noise2Void masking percentage</h3>
+
+# As you might have spotted, the actual number of masked pixels slightly differs from the specified `masked_pixel_percentage`.
+# This comes from the implementation of the masking strategy, which ensures that the masked pixels are not too close to each other. 
+# This is done to prevent the network from learning to predict a masked pixel based on another masked pixel, which would violate the assumptions of N2V and lead to suboptimal performance.
+
+# </div>
+
+
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-success"><h1><b>Checkpoint 1: N2V masking</b></h1>
@@ -189,7 +199,7 @@ plt.imshow(val_image, cmap="gray")
 # ## Part 3: Create a configuration
 #
 # CAREamics can be configured either from a `.yaml` file, or with an explicitly created config object.
-# In this note book we will create the config object using helper functions. CAREamics will automatically 
+# In this notebook we will create the config object using helper functions. CAREamics will automatically 
 # validate all the parameters and will output explicit error if some parameters or a combination of parameters isn't allowed. It will also provide default values for missing parameters.
 #
 # The helper function limits the parameters to what is relevant for N2V, here is a break down of these parameters:
@@ -259,7 +269,7 @@ careamist.train(train_source=train_images_path, val_source=validation_images_pat
 #
 # Remember the configuration? Didn't we set `logger` to `tensorboard`? Then we can visualize the loss curve!
 #
-# Open Tensorboard in VS Code (check Task 3 in 01_CARE) to monitor training. 
+# Open Tensorboard in the terminal (check Task 5 in 01_CARE) to monitor training. 
 # Logs for this model are stored in the `02_Noise2Void/tb_logs/` folder.
 # </div>
 #
@@ -276,10 +286,12 @@ careamist.train(train_source=train_images_path, val_source=validation_images_pat
 # In order to predict on an image, we also need to specify the path. We also typically need
 # to cut the image into patches, predict on each patch and then stitch the patches back together.
 #
-# To make the process faster, we can choose bigger tiles than the patches used during training. By default CAREamics uses tiled prediction to handle large images. The tile size can be set via the `tile_size` parameter. Tile overlap is computed automatically based on the network architecture.
+# By default CAREamics uses tiled prediction to handle large images. 
+# The tile size can be set via the `tile_size` parameter. 
+# Tile overlap is computed automatically based on the network architecture.
 
 # %% tags=[]
-preds = careamist.predict(source=train_images_path, tile_size=(256, 256))[0]
+preds = careamist.predict(source=train_images_path, tile_size=(64, 64))[0]
 
 # %% [markdown] tags=[]
 # ### Visualize predictions
@@ -386,7 +398,7 @@ print(f"Checkpoint from epoch: {ckpt['epoch']}")
 pretrained_careamist = CAREamist(source=checkpoint_path)
 
 # And predict
-new_preds = pretrained_careamist.predict(source=train_images_path, tile_size=(256, 256))[0]
+new_preds = pretrained_careamist.predict(source=train_images_path, tile_size=(64, 64))[0]
 
 # Show the full image
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
@@ -417,3 +429,14 @@ ax[1].imshow(new_preds.squeeze(), cmap="gray")
 # %% [markdown] tags=[]
 # <hr style="height:2px;"><div class="alert alert-block alert-success"><h1>End of the exercise</h1>
 # </div>
+
+# %% [markdown] tags=[]
+# <div class="alert alert-block alert-info"><h3>Next exercise</h3>
+#
+# The next exercise is about [03_MicroSplit](../03_MicroSplit/exercise.ipynb), that is a computational multiplexing technique.
+# It uses a deep learning model to separate multiple superimposed cellular structures within a single fluorescent image channel, turning one fluorescent channel into multiple ones (up to 4 in published work).
+# Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
+# An example of splitting is shown below.
+# 
+# <img src="./../03_MicroSplit/imgs/Fig1_b.png">
+#

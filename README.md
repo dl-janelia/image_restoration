@@ -5,8 +5,8 @@ Welcome to the Image Restoration exercises. In this part of the course, we will 
 how to use deep learning to denoise images, with examples of widely used algorithm for
 both supervised and unsupervised denoising. We will also explore the difference
 between unstructured and structured noise, and between UNet (which you are familiar with
-by now) and VAE architectures (see `COSDD` exercise)!
-We'll also tackle the task of image splitting (or unmixing) where a single image exhibiting superimposed labeled structures is decomposed in multiple channels, each one corresponding to a different structure using the `MicroSplit` algorithm.
+by now) and VAE architectures (see `COSDD` exercises)!
+We'll also tackle the task of image decomposition (or splitting, unmixing) where a single image exhibiting superimposed labeled structures is decomposed in multiple channels, each one corresponding to a different labeled structure using the `MicroSplit` algorithm.
 
 
 ## Setup
@@ -18,41 +18,34 @@ source setup.sh
 ```
 
 ## Exercises
-The first exercise, [1. Context-aware restoration (CARE)](01_CARE/exercise.ipynb), is mandatory. It will introduce you to deep learning image restoration by training a UNet for denoising.
+The first exercise, [1. Context-aware restoration (CARE)](01_CARE/exercise.ipynb) will introduce you to deep learning-based image restoration by training a UNet for denoising.
 
-When you reach the end of the first exercise, choose your next exercise from the following:
-
-[2. Noise2Void (N2V)](02_Noise2Void/exercise.ipynb).
-This exercise will introduce a denoiser that is trained using only noisy data.
-Unlike CARE, it doesn't need any examples of clean images.
+Then, in the [2. Noise2Void (N2V)](02_Noise2Void/exercise.ipynb) exercise you will train a denoiser using only noisy data, i.e., in a self-supervised way.
+Indeed, unlike CARE, it doesn't need any examples of clean images.
 It's also relatively quick to train.
+For these reasons, it has become a go-to method for denoising in microscopy imaging.
 But there's a catch.
 It relies on the assumption that the noise is unstructured.
-Unstructured noise is uncorrelated over pixels, so has no streaky or line artifacts.
+Unstructured noise is uncorrelated over pixels, so it has no streaky or line artifacts.
 An example is shown below.
 
 <img src="./02_Noise2Void/imgs/unstructured noise.png">
 
-[3. COSDD](03_COSDD/exercise.ipynb). 
-This exercise will introduce another denoiser that is trained using unpaired noisy images, but can handle a specific form of structure.
+The next exercise is about [3. MicroSplit](03_MicroSplit/exercise.ipynb).
+MicroSplit is a deep learning algorithm that jointly performs computational unmixing and denoising.
+Specifically, it uses a VAE architecture to separate multiple superimposed cellular structures within a single fluorescent image channel, turning a single channel into as many as 4.
+Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
+An example of splitting is shown below.
+
+<img src="./03_MicroSplit/imgs/Fig1_b.png">
+
+## Bonus exercise
+If you've finished these exercises, have a look at [4. COSDD](04_bonus_COSDD/exercise.ipynb). 
+In this exercise will introduce another denoiser that is trained using unpaired noisy images, but can handle a specific form of structure.
 That structure is row correlation.
 Row-correlated noise is common in scanning-based imaging techniques like point-scanning confocal microscopy.
 It can also be found when using sCMOS sensors.
 The practical trade-off with N2V is that COSDD takes much longer to train.
 An example of row-correlated noise is shown below.
 
-<img src="./03_COSDD/resources/structured noise.png">
-
-[4. MicroSplit](04_MicroSplit/exercise.ipynb).
-This exercise introduces a method that not only learns to denoise images, but also performs computational unmixing.
-Specifically, it uses deep learning to separate multiple superimposed cellular structures within a single fluorescent image channel, turning one fluorescent channel into as many as four.
-Imaging multiple cellular structures in a single fluorescent channel effectively increases the available photon budget, which can be reallocated to achieve faster imaging, higher signal-to-noise ratios, or the imaging of additional structures. 
-An example of splitting is shown below.
-
-<img src="./04_MicroSplit/imgs/Fig1_b.png">
-
-## Bonus exercise
-If you've finished these exercises, have a look at [5. Noise2Noise](05_bonus_Noise2Noise).
-This is a denoiser that is similar to CARE, except instead of noisy inputs and clean targets it uses both noisy inputs and noisy targets, i.e. two images with the same underlying signal but different realisations of noise.
-Because the random noise content of an image is on average zero, a network trained with noisy targets will converge to the same optima as a network trained with clean targets.
-
+<img src="./04_bonus_COSDD/resources/structured noise.png">
