@@ -22,20 +22,20 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     pip install git+https://github.com/dlmbl/dlmbl-unet
     python -m ipykernel install --user --name "05_image_restoration"
     # Clone the extra repositories
-    git clone https://github.com/krulllab/COSDD.git 03_COSDD/COSDD
+    git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
     pip install -U tensorboard
 fi
 
 # Download the data
 # CARE + N2V
-if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.unzip" ] || [ ! -d "data/denoising-N2N_SEM.unzip" ]; then
+if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.unzip" ]; then
     echo "Downloading CARE + N2V data..."
     python download_careamics_portfolio.py
 else
-    echo "CARE, N2V + N2N data already exists, skipping download."
+    echo "CARE, N2V data already exists, skipping download."
 fi
 
-cd 03_COSDD/
+cd 04_bonus_COSDD/
 # COSDD
 if [ ! -d "checkpoints" ]; then
     echo "Adding pretrained checkpoint..."
