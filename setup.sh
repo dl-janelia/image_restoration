@@ -31,11 +31,11 @@ fi
 
 # Download the data
 # CARE + N2V
-if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.unzip" ] || [ ! -d "data/denoising-N2N_SEM.unzip" ]; then
+if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.unzip" ]; then
     echo "Downloading CARE + N2V data..."
     python download_careamics_portfolio.py
 else
-    echo "CARE, N2V + N2N data already exists, skipping download."
+    echo "CARE + N2V data already exists, skipping download."
 fi
 
 # COSDD
