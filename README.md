@@ -48,5 +48,4 @@ It can also be found when using sCMOS sensors.
 The practical trade-off with N2V is that COSDD takes much longer to train.
 An example of row-correlated noise is shown below.
 
-<img src="./03_COSDD/resources/structured noise.png">
-
+<img src="./04_bonus_COSDD/resources/structured noise.png">
