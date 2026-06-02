@@ -46,6 +46,6 @@ if [ ! -d "checkpoints" ]; then
 fi
 cd checkpoints/
 if [ ! -d "mito-pretrained" ]; then
-    cp -r /mnt/efs/aimbl_2025/data/mito-pretrained . # FIXME: this is not there...
+    cp -r /mnt/efs/dl_jrc/data/05_image_restoration/COSDD/mito-pretrained .
 fi
 cd ../../

@@ -112,8 +112,7 @@ assert torch.cuda.is_available()
 torch.set_float32_matmul_precision('medium')
 
 # %% tags=[]
-# TODO: update once loaded on Janelia servers
-ROOT_DIR = Path("/group/jug/public_html/MicroSplit_MBL_2025")  # Path to the data folder
+ROOT_DIR = Path("/mnt/efs/dl_jrc/data/05_image_restoration/MicroSplit")  # Path to the data folder
 
 
 # %% [markdown] tags=[]
