@@ -3,6 +3,7 @@
 # create environment
 ENV="05_image_restoration"
 conda create -y -n "$ENV" python=3.11
+source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
 conda activate "$ENV"
 
 # check that the environment was activated
