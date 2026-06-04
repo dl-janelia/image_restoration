@@ -3,7 +3,6 @@
 # %% [markdown] tags=[]
 # # MicroSplit: Semantic Unmixing of Fluorescent Microscopy Data
 
-# TODO: reduce dset size!!!
 #
 # In this notebook, you will work with MicroSplit, a deep learning-based computational multiplexing technique that allows imaging multiple cellular structures within a single fluorescent channel. The method enables imaging more cellular structures, imaging them faster, and at reduced overall light exposure.
 #
@@ -56,10 +55,14 @@
 # Set your python kernel to <code>05_image_restoration</code>
 # </div>
 
-# %% [markdown] tags=["solution"]
-# <div class="alert">
-# Note for reviewers: dataset can be reduced to have faster training and inference!
+# %% [markdown] tags=[]
+# <div class="alert alert-info"><h4><b>Task 1.1.</b></h4>
+# In the following cell you will install the package to run MicroSplit experiments.
+# We couldn't install it in the <code>setup.sh</code> file as it uses an older version of CAREamics.
 # </div>
+
+# %% tags=[]
+# !pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
 
 # %% tags=[]
 from functools import partial
@@ -422,7 +425,7 @@ trainer.fit(
 #
 # ```
 # conda activate 05_image_restoration
-# tensorboard --logdir 04_MicroSplit/tb_logs/
+# tensorboard --logdir 03_MicroSplit/tb_logs/
 # ```
 
 # %% [markdown] tags=[]
