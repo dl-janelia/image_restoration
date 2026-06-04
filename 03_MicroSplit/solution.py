@@ -52,17 +52,18 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration</code>
-# </div>
-
-# %% [markdown] tags=[]
-# <div class="alert alert-info"><h4><b>Task 1.1.</b></h4>
-# In the following cell you will install the package to run MicroSplit experiments.
-# We couldn't install it in the <code>setup.sh</code> file as it uses an older version of CAREamics.
+# Set your python kernel to <code>05_image_restoration_microsplit</code>
 # </div>
 
 # %% tags=[]
-# !pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
+# Check that the correct version of careamics is installed
+import careamics
+
+assert careamics.__version__ == "0.0.12", (
+    f"Expected careamics version 0.0.12, but found {careamics.__version__}. "
+    "Please make sure your kernel is set to `05_image_restoration_microsplit`."
+)
+print(f"careamics version {careamics.__version__} is correctly installed.")
 
 # %% tags=[]
 from functools import partial

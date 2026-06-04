@@ -27,9 +27,9 @@ fi
 
 
 # create environment for CARE, N2V, COSDD exercises
-echo "======================================"
+echo "======================================================"
 echo "Creating environment for CARE, Noise2Void and COSDD..."
-echo "======================================"
+echo "======================================================"
 ENV="05_image_restoration"
 conda create -y -n "$ENV" python=3.11
 source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
