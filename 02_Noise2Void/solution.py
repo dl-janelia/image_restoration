@@ -64,10 +64,11 @@ import matplotlib.pyplot as plt
 import tifffile
 
 from careamics import CAREamist
-from careamics.config import (
-    create_n2v_configuration,
-)
-from careamics.transforms import N2VManipulate
+from careamics.config import create_advanced_n2v_config
+from careamics.compat.transforms.n2v_manipulate import N2VManipulate
+
+from careamics.config.algorithms.n2v_manipulation import N2VManipulateConfig
+from careamics.lightning.modules.n2v_utils import N2VManipulate
 
 # %matplotlib inline
 
@@ -115,11 +116,12 @@ patch = np.arange(dummy_patch_size**2).reshape(dummy_patch_size, dummy_patch_siz
 patch = patch[np.newaxis]
 
 # Instantiate the pixel manipulator
-manipulator = N2VManipulate(
+config = N2VManipulateConfig(
     roi_size=roi_size,
     masked_pixel_percentage=masked_pixel_percentage,
     strategy=strategy,
 )
+manipulator = N2VManipulate(config)
 
 # And apply it
 masked_patch, original_patch, mask = manipulator(patch)
@@ -230,8 +232,8 @@ plt.imshow(val_image, cmap="gray")
 
 # %% tags=[]
 # Create a configuration using the helper function
-training_config = create_n2v_configuration(
-    experiment_name="YOUR_NAME_n2v_exp", # <-- change YOUR_NAME
+training_config = create_advanced_n2v_config(
+    experiment_name="YOUR_NAME_n2v_exp", # <-- TODO: change YOUR_NAME
     data_type="tiff",
     axes="YX",
     patch_size=[64, 64],
@@ -253,7 +255,7 @@ training_config = create_n2v_configuration(
 # Let's instantiate the model with the configuration we just created. CAREamist is the main class of the library, it will handle creation of the data pipeline, the model, training and inference methods.
 
 # %% tags=[]
-careamist = CAREamist(source=training_config)
+careamist = CAREamist(config=training_config)
 
 # %% [markdown] tags=[]
 # ## Part 4: Train
@@ -262,7 +264,7 @@ careamist = CAREamist(source=training_config)
 # the data or to a single file. If it fits in memory, then CAREamics will load everything and train on it. If it doesn't, then CAREamics will load the data file by file.
 
 # %% tags=[]
-careamist.train(train_source=train_images_path, val_source=validation_images_path)
+careamist.train(train_data=train_images_path, val_data=validation_images_path)
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-info"><h3><b>Task 2: Tensorboard</b></h3>
@@ -291,7 +293,11 @@ careamist.train(train_source=train_images_path, val_source=validation_images_pat
 # Tile overlap is computed automatically based on the network architecture.
 
 # %% tags=[]
-preds = careamist.predict(source=train_images_path, tile_size=(64, 64))[0]
+preds = careamist.predict(
+    pred_data=train_images_path,
+    tile_size=(64, 64),
+    tile_overlap=(32, 32)
+)[0]
 
 # %% [markdown] tags=[]
 # ### Visualize predictions
@@ -300,7 +306,7 @@ preds = careamist.predict(source=train_images_path, tile_size=(64, 64))[0]
 # Show the full image
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 ax[0].imshow(train_image, cmap="gray")
-ax[1].imshow(preds.squeeze(), cmap="gray")
+ax[1].imshow(preds[0], cmap="gray")
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-warning"><h3><b>Question: Inspect the image closely</b></h3>
@@ -328,7 +334,7 @@ x_end = 850
 
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 ax[0].imshow(train_image[y_start:y_end, x_start:x_end], cmap="gray")
-ax[1].imshow(preds.squeeze()[y_start:y_end, x_start:x_end], cmap="gray")
+ax[1].imshow(preds[0][y_start:y_end, x_start:x_end], cmap="gray")
 
 # %% [markdown] tags=["solution"]
 # <div class="alert alert-block alert-warning"><h3><b>Answer: Inspect the image closely</b></h3>
@@ -345,7 +351,7 @@ ax[1].imshow(preds.squeeze()[y_start:y_end, x_start:x_end], cmap="gray")
 # </div>
 
 # %% tags=[]
-residuals = preds.squeeze() - train_image
+residuals = preds[0] - train_image
 plt.imshow(residuals, cmap="gray")
 
 # %% [markdown] tags=["solution"]
@@ -395,15 +401,20 @@ print(f"Checkpoint from epoch: {ckpt['epoch']}")
 
 # %% tags=[]
 # Instantiate a CAREamist from a checkpoint
-pretrained_careamist = CAREamist(source=checkpoint_path)
+# Instantiate a CAREamist from a checkpoint
+pretrained_careamist = CAREamist(checkpoint_path=checkpoint_path)
 
 # And predict
-new_preds = pretrained_careamist.predict(source=train_images_path, tile_size=(64, 64))[0]
+new_preds = pretrained_careamist.predict(
+    pred_data=train_images_path,
+    tile_size=(64, 64),
+    tile_overlap=(32, 32)
+)[0]
 
 # Show the full image
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
 ax[0].imshow(train_image, cmap="gray")
-ax[1].imshow(new_preds.squeeze(), cmap="gray")
+ax[1].imshow(new_preds[0], cmap="gray")
 
 # %% [markdown] tags=[]
 # <div class="alert alert-block alert-success"><h1>Checkpoint 3: Prediction</h1>
