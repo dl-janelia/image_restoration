@@ -15,19 +15,17 @@ fi
 
 # Further instructions that should only run if the environment is active
 if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-    pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
-    pip install tensorboard torch_tb_profiler scikit-learn gdown jupyterlab
-    # Using pytorch-lightning 2.4.0 causes bugs in tensorboard and interupting training.
-    pip install pytorch-lightning==2.3.3
-    pip install git+https://github.com/dlmbl/dlmbl-unet # TODO: potentially replace with `git+https://github.com/dl-janelia/dlmbl-unet` 
-    python -m ipykernel install --user --name "05_image_restoration"
-    # Clone the extra repositories
-    git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
-    pip install -U tensorboard
-    pip install "setuptools<=81"  # setuptools>=82 removes pkg_resources, required by tensorboard<=2.20
+    pip install careamics
     pip install careamics_portfolio
-    pip install tifffile matplotlib
+    pip install git+https://github.com/dl-janelia/dlmbl-unet
+    pip install tensorboard
+    pip install "setuptools<81"  # setuptools>=81 removes pkg_resources, required by tensorboard<=2.20
+
+    # packages to run jupyter notebooks
+    python -m ipykernel install --user --name "05_image_restoration"
+
+    # Clone the extra COSDD repository
+    git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
 fi
 
 # Download the data
