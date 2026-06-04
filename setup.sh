@@ -1,6 +1,35 @@
 #!/bin/bash
 
-# create environment
+# create environment for MicroSplit
+echo "======================================"
+echo "Creating environment for MicroSplit..."
+echo "======================================"
+ENV="05_image_restoration_microsplit"
+conda create -y -n "$ENV" python=3.11
+source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
+conda activate "$ENV"
+
+# check that the environment was activated
+if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
+    echo "Environment activated successfully"
+else
+    echo "Failed to activate the environment"
+fi
+
+# Further instructions that should only run if the environment is active
+if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
+    pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
+    
+    # packages to run jupyter notebooks
+    pip install ipykernel
+    python -m ipykernel install --user --name "05_image_restoration"
+fi
+
+
+# create environment for CARE, N2V, COSDD exercises
+echo "======================================"
+echo "Creating environment for CARE, Noise2Void and COSDD..."
+echo "======================================"
 ENV="05_image_restoration"
 conda create -y -n "$ENV" python=3.11
 source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
@@ -22,6 +51,7 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     pip install "setuptools<81"  # setuptools>=81 removes pkg_resources, required by tensorboard<=2.20
 
     # packages to run jupyter notebooks
+    pip install ipykernel
     python -m ipykernel install --user --name "05_image_restoration"
 
     # Clone the extra COSDD repository
