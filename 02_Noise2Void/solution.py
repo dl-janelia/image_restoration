@@ -35,6 +35,7 @@
 #     <img src="https://raw.githubusercontent.com/CAREamics/.github/main/profile/images/banner_careamics.png" width=400>
 # </p>
 #
+# Authored by: Federico Carrara, Igor Zubarev, Ben Salmon and Larissa Heinrich.
 #
 # ## References
 #

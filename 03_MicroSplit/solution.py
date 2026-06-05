@@ -50,6 +50,8 @@
 # - To understand in detail how the joint denoising is performed please check this other work: [denoiSplit: a method for joint microscopy image splitting and unsupervised denoising](https://eccv.ecva.net/virtual/2024/poster/2538).
 # P.S. Web is full of videos and blogposts explaining VAEs and LVAEs... just google it!
 
+# Authored by Federico Carrara.
+
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
 # Set your python kernel to <code>05_image_restoration_microsplit</code>

@@ -7,6 +7,8 @@
 # These constraints require balancing imaging speed, resolution, light exposure, and depth. 
 # CARE demonstrates how Deep Learning can extend the range of biological phenomena observable by microscopy when any of these factor becomes limiting.
 #
+# Authored by: Federico Carrara, Igor Zubarev, Ben Salmon and Larissa Heinrich.
+#
 # **Reference**: Weigert, et al. "Content-aware image restoration: pushing the limits of fluorescence microscopy." Nature methods 15.12 (2018): 1090-1097. doi:[10.1038/s41592-018-0216-7](https://www.nature.com/articles/s41592-018-0216-7)
 #
 
