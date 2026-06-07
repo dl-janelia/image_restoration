@@ -28,7 +28,7 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
 fi
 
 
-# create environment for CARE, N2V, COSDD exercises
+# create environment for CARE & N2V exercises
 echo "======================================================"
 echo "Creating environment for CARE, Noise2Void and COSDD..."
 echo "======================================================"
@@ -55,9 +55,6 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     # packages to run jupyter notebooks
     pip install ipykernel
     python -m ipykernel install --user --name "05_image_restoration"
-
-    # Clone the extra COSDD repository
-    git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
 fi
 
 # Download the data
@@ -68,15 +65,3 @@ if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.u
 else
     echo "CARE, N2V data already exists, skipping download."
 fi
-
-# COSDD
-cd 04_bonus_COSDD/
-if [ ! -d "checkpoints" ]; then
-    echo "Adding pretrained checkpoint..."
-    mkdir checkpoints
-fi
-cd checkpoints/
-if [ ! -d "mito-pretrained" ]; then
-    cp -r /mnt/efs/dl_jrc/data/05_image_restoration/COSDD/mito-pretrained .
-fi
-cd ../../

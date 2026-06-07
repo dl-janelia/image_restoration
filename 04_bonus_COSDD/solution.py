@@ -2,6 +2,13 @@
 # ruff: noqa: F811
 # %% [markdown] tags=[]
 # # Exercise: Training COSDD
+
+# %% [markdown] tags=[]
+# <div class="alert alert-danger">
+# Before running the exercise, run <code>source cosdd_setup.sh</code> to create the environment and install the necessary dependencies.
+# </div>
+
+# %% [markdown] tags=[]
 #
 # In this section, we will train a COSDD model to remove row correlated and signal-dependent imaging noise. 
 # You will load noisy data and examine the noise for spatial correlation, then initialise a model and monitor its training.
@@ -13,7 +20,7 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration</code>
+# Set your python kernel to <code>05_image_restoration_COSDD</code>
 # </div>
 
 # %% tags=[]
@@ -68,7 +75,7 @@ assert torch.cuda.is_available()
 
 # %% tags=["task"]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = ... # Enter the data's file name here
 axes = "SYX"
 n_dimensions = 2
@@ -78,7 +85,7 @@ low_snr, original_sizes = utils.load_data(
 
 # %% tags=["solution"]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = "mito-confocal-lowsnr.tif"
 axes = "SYX"
 n_dimensions = 2
@@ -488,7 +495,7 @@ torch.cuda.empty_cache()
 
 # %% tags=[]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = "mito-confocal-lowsnr.tif"
 axes = "SYX"
 n_dimensions = 2
