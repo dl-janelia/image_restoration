@@ -276,7 +276,7 @@ datamodule = utils.DataModule(
 #
 # `ar_decoder` The autoregressive decoder that will decode latent variables into a distribution over the input.
 # * `noise_direction` (str): Axis along which noise is correlated: `"x"`, `"y"` or `"z"`. This needs to match the orientation of the noise structures we revealed in the autocorrelation plot in Task 1.2.
-# * `n_gaussians` (int): Number of components in Gaussian mixture used to model data.
+# * `n_components` (int): Number of components in Gaussian mixture used to model data.
 #
 # `direct_denoiser` The U-Net that can optionally be trained to predict the MMSE or MMAE of the denoised images. This will slow training slightly but massively speed up inference and is worthwile if you have an inference dataset in the gigabytes. See [this paper](https://arxiv.org/abs/2310.18116). Enable or disable the direct denoiser by setting `use_direct_denoiser` to `True` or `False`.
 # * `loss_fn` (str): Whether to use `"L1"` or `"MSE"` loss function to predict either the mean or pixel-wise median of denoised images respectively.
@@ -288,7 +288,7 @@ datamodule = utils.DataModule(
 s_code_channels = 64
 n_layers = 6
 noise_direction = ...  # 
-n_gaussians = 10
+n_components = 10
 use_direct_denoiser = ...  # 
 dd_loss_fn = "MSE"
 graident_checkpoints = False
@@ -306,7 +306,7 @@ config = {
     "hyper-parameters": {
         "s-code-channels": s_code_channels,
         "number-layers": n_layers,
-        "number-gaussians": n_gaussians,
+        "number-components": n_components,
         "noise-direction": noise_direction,
     },
 }
@@ -331,7 +331,7 @@ hub = Hub(
 s_code_channels = 64
 n_layers = 6
 noise_direction = "x"
-n_gaussians = 10
+n_components = 10
 use_direct_denoiser = True
 dd_loss_fn = "MSE"
 graident_checkpoints = False
@@ -349,7 +349,7 @@ config = {
     "hyper-parameters": {
         "s-code-channels": s_code_channels,
         "number-layers": n_layers,
-        "number-gaussians": n_gaussians,
+        "number-components": n_components,
         "noise-direction": noise_direction,
     },
 }
@@ -400,7 +400,7 @@ hub = Hub(
 #
 # There will also be an IMAGES tab. This shows noisy input images from the validation set and some outputs. These will be two randomly sampled denoised images (sample 1 and sample 2), the average of ten denoised images (mmse) and if the direct denoiser is enabled, its output (direct estimate).
 #
-# If noise has not been fully removed from the output images, try increasing `n_gaussians` argument of the AR decoder. This will give it more flexibility to model complex noise characteristics. However, setting the value too high can lead to unstable training. Typically, values from 3 to 5 work best.
+# If noise has not been fully removed from the output images, try increasing `n_components` argument of the AR decoder. This will give it more flexibility to model complex noise characteristics. However, setting the value too high can lead to unstable training. Typically, values from 3 to 5 work best.
 #
 # Note that the trainer is set to train for only 15 minutes in this example. Remove the line with `max_time` to train fully.
 
@@ -562,7 +562,7 @@ predictor = pl.Trainer(
 model_name = "mito-confocal"
 checkpoint_path = os.path.join("checkpoints", model_name)
 # TODO: Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
-# checkpoint_path = "checkpoints/mito-confocal-pretrained"
+# checkpoint_path = "checkpoints/mito-pretrained"
 
 with open(os.path.join(checkpoint_path, "training-config.yaml")) as f:
     train_cfg = yaml.load(f, Loader=yaml.FullLoader)

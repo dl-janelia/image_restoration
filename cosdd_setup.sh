@@ -23,7 +23,7 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     # Clone the COSDD repository
     git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
     cd 04_bonus_COSDD/COSDD
-    git checkout c0b49ac
+    git checkout eae0b6c
 fi
 
 # other preparations
