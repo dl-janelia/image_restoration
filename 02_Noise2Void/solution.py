@@ -103,7 +103,7 @@ from careamics.lightning.modules.n2v_utils import N2VManipulate
 
 # %% tags=[]
 # Define a patch size for this exercise
-dummy_patch_size = 64
+dummy_patch_size = 20
 
 # Define masking parameters
 roi_size = 11 # <-- try changing this
@@ -131,7 +131,7 @@ masked_patch, original_patch, mask = manipulator(patch)
 # Visualize the masked patch and the mask
 # NOTE: masked pixels are shown as white pixels on the right
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-ax[0].imshow(masked_patch[0].to("cpu"))
+ax[0].imshow(masked_patch[0].to("cpu"), cmap="magma")
 ax[0].title.set_text("Manipulated patch")
 ax[1].imshow(mask[0].to("cpu"), cmap="gray")
 ax[1].title.set_text("Mask")
