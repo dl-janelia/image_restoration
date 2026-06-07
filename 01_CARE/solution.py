@@ -127,8 +127,8 @@ assert all(
 # TODO: split train and validation sets using `train_files_percentage`
 tot_num_image_files = ... # YOUR CODE HERE
 tot_num_target_files = ... # YOUR CODE HERE
-num_train_image_files = ... # YOUR CODE HERE -> use `train_files_percentage` here
-num_train_target_files = ... # YOUR CODE HERE -> use `train_files_percentage` here
+num_train_image_files = int(...) # YOUR CODE HERE -> use `train_files_percentage` here, make sure it is integer
+num_train_target_files = int(...) # YOUR CODE HERE -> use `train_files_percentage` here, make sure it is integer
 train_image_files = image_files[ ... ] # YOUR CODE HERE
 train_target_files = target_files[ ... ] # YOUR CODE HERE
 val_image_files = image_files[ ... ] # YOUR CODE HERE
@@ -725,7 +725,9 @@ val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False)
 # <div class="alert alert-block alert-info"><h3>Task 3: Instantiate a UNet for supervised denoising</h3>
 #
 # Define a UNet suitable for the denoising task.
-# Recall that in denoising we input a single noisy grayscale (i.e., single-channel) image and we try to predict a single clean grayscale image. 
+# Recall that in denoising we input a single noisy grayscale (i.e., single-channel) image and we try to predict a single clean grayscale image.
+# Also note that denoising is a *regression* task, i.e., the output values are pixel intensities, not probabilities or class labels.
+# Therefore, do we need a final activation for the task? If yes, which one?
 #
 # </div>
 
