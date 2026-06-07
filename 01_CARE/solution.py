@@ -115,7 +115,7 @@ train_files_percentage = ... # YOUR CODE HERE
 seed = 42
 np.random.seed(seed)
 
-# TODO: shuffle the file lists using the sample shuffled indices
+# TODO: shuffle the file lists using the sampled shuffled indices
 shuffled_indices = np.random.permutation(len(image_files))
 image_files = ... # YOUR CODE HERE -> Hint: first transform to np.array
 target_files = ... # YOUR CODE HERE -> Hint: first transform to np.array
@@ -124,7 +124,11 @@ assert all(
     [i.name == j.name for i, j in zip(image_files, target_files)]
 ), "Files do not match"
 
-# TODO: 
+# TODO: split train and validation sets using `train_files_percentage`
+tot_num_image_files = ... # YOUR CODE HERE
+tot_num_target_files = ... # YOUR CODE HERE
+num_train_image_files = ... # YOUR CODE HERE -> use `train_files_percentage` here
+num_train_target_files = ... # YOUR CODE HERE -> use `train_files_percentage` here
 train_image_files = image_files[ ... ] # YOUR CODE HERE
 train_target_files = target_files[ ... ] # YOUR CODE HERE
 val_image_files = image_files[ ... ] # YOUR CODE HERE
@@ -162,10 +166,14 @@ assert all(
     [i.name == j.name for i, j in zip(image_files, target_files)]
 ), "Files do not match"
 
-train_image_files = image_files[: int(train_files_percentage * len(image_files))]
-train_target_files = target_files[: int(train_files_percentage * len(target_files))]
-val_image_files = image_files[int(train_files_percentage * len(image_files)) :]
-val_target_files = target_files[int(train_files_percentage * len(target_files)) :]
+tot_num_image_files = len(image_files)
+tot_num_target_files = len(target_files)
+num_train_image_files = int(train_files_percentage * tot_num_image_files)
+num_train_target_files = int(train_files_percentage * tot_num_target_files)
+train_image_files = image_files[:num_train_image_files]
+train_target_files = target_files[:num_train_target_files]
+val_image_files = image_files[num_train_image_files:]
+val_target_files = target_files[num_train_target_files:]
 
 assert all(
     [i.name == j.name for i, j in zip(train_image_files, train_target_files)]
