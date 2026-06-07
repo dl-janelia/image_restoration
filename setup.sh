@@ -21,6 +21,8 @@ if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
     pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
     
     # packages to run jupyter notebooks
+    pip install tensorboard
+    pip install "setuptools<81"  # setuptools>=81 removes pkg_resources, required by tensorboard<=2.20
     pip install ipykernel
     python -m ipykernel install --user --name "05_image_restoration"
 fi
