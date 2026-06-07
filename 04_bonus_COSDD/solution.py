@@ -531,7 +531,9 @@ predict_loader = torch.utils.data.DataLoader(
 # %% tags=["task"]
 model_name = ...  ### Insert the model name here
 checkpoint_path = os.path.join("checkpoints", model_name)
-# checkpoint_path = "checkpoints/mito-confocal-pretrained" ### Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+
+# TODO: Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# checkpoint_path = "checkpoints/mito-pretrained"
 
 with open(os.path.join(checkpoint_path, "training-config.yaml")) as f:
     train_cfg = yaml.load(f, Loader=yaml.FullLoader)
@@ -559,7 +561,8 @@ predictor = pl.Trainer(
 # %% tags=["solution"]
 model_name = "mito-confocal"
 checkpoint_path = os.path.join("checkpoints", model_name)
-# checkpoint_path = "checkpoints/mito-confocal-pretrained" ### Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# TODO: Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# checkpoint_path = "checkpoints/mito-confocal-pretrained"
 
 with open(os.path.join(checkpoint_path, "training-config.yaml")) as f:
     train_cfg = yaml.load(f, Loader=yaml.FullLoader)
