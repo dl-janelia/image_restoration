@@ -63,6 +63,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile
+import torch
 
 from careamics import CAREamist
 from careamics.config import create_advanced_n2v_config
@@ -105,13 +106,13 @@ from careamics.lightning.modules.n2v_utils import N2VManipulate
 dummy_patch_size = 64
 
 # Define masking parameters
-roi_size = 10 # <-- try changing this
+roi_size = 11 # <-- try changing this
 masked_pixel_percentage = 1 # <-- try changing this
 strategy = 'uniform' # <-- select between 'uniform' and 'median'
 
 # %% tags=[]
 # Create a dummy patch
-patch = np.arange(dummy_patch_size**2).reshape(dummy_patch_size, dummy_patch_size)
+patch = torch.arange(dummy_patch_size**2).reshape(dummy_patch_size, dummy_patch_size).to("cuda")
 
 # The pixel manipulator expects a channel dimension, so we need to add it to the patch
 patch = patch[np.newaxis]
@@ -130,9 +131,9 @@ masked_patch, original_patch, mask = manipulator(patch)
 # Visualize the masked patch and the mask
 # NOTE: masked pixels are shown as white pixels on the right
 fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-ax[0].imshow(masked_patch[0])
+ax[0].imshow(masked_patch[0].to("cpu"))
 ax[0].title.set_text("Manipulated patch")
-ax[1].imshow(mask[0], cmap="gray")
+ax[1].imshow(mask[0].to("cpu"), cmap="gray")
 ax[1].title.set_text("Mask")
 
 # %% [markdown] tags=["solution"]
@@ -401,7 +402,6 @@ ckpt = load(checkpoint_path, map_location="cpu")
 print(f"Checkpoint from epoch: {ckpt['epoch']}")
 
 # %% tags=[]
-# Instantiate a CAREamist from a checkpoint
 # Instantiate a CAREamist from a checkpoint
 pretrained_careamist = CAREamist(checkpoint_path=checkpoint_path)
 
