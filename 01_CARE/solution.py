@@ -7,6 +7,8 @@
 # These constraints require balancing imaging speed, resolution, light exposure, and depth. 
 # CARE demonstrates how Deep Learning can extend the range of biological phenomena observable by microscopy when any of these factor becomes limiting.
 #
+# Authored by: Federico Carrara, Igor Zubarev, Ben Salmon and Larissa Heinrich.
+#
 # **Reference**: Weigert, et al. "Content-aware image restoration: pushing the limits of fluorescence microscopy." Nature methods 15.12 (2018): 1090-1097. doi:[10.1038/s41592-018-0216-7](https://www.nature.com/articles/s41592-018-0216-7)
 #
 
@@ -95,22 +97,84 @@ assert len(image_files) == len(
 
 print(f"Total size of train dataset: {len(image_files)}")
 
-# %%
-# Split the train data into train and validation
+# %% [markdown] tags=[]
+# <div class="alert alert-block alert-info"><h3>Task 0: Split dataset into Training and Validation sets</h3>
+#
+# Split the dataset of `image_files` and `target_files` into training and validation sets.
+# You have to do the followings:
+# 1. Define the percentage of data you want to keep for training.
+# 2. Shuffle the set of files, so that data splits contain mixed files.
+# 3. Get the data splits: take the first `train_files_percentage`%  as the training data and the last as validation.
+#
+# </div>
+
+# %% tags=["task"]
+train_files_percentage = ... # YOUR CODE HERE
+
+# set seed for reproducibility
 seed = 42
-train_files_percentage = 0.8
 np.random.seed(seed)
+
+# TODO: shuffle the file lists using the sampled shuffled indices
 shuffled_indices = np.random.permutation(len(image_files))
-image_files = np.array(image_files)[shuffled_indices]
-target_files = np.array(target_files)[shuffled_indices]
+image_files = ... # YOUR CODE HERE -> Hint: first transform to np.array
+target_files = ... # YOUR CODE HERE -> Hint: first transform to np.array
+
 assert all(
     [i.name == j.name for i, j in zip(image_files, target_files)]
 ), "Files do not match"
 
-train_image_files = image_files[: int(train_files_percentage * len(image_files))]
-train_target_files = target_files[: int(train_files_percentage * len(target_files))]
-val_image_files = image_files[int(train_files_percentage * len(image_files)) :]
-val_target_files = target_files[int(train_files_percentage * len(target_files)) :]
+# TODO: split train and validation sets using `train_files_percentage`
+tot_num_image_files = ... # YOUR CODE HERE
+tot_num_target_files = ... # YOUR CODE HERE
+num_train_image_files = int(...) # YOUR CODE HERE -> use `train_files_percentage` here, make sure it is integer
+num_train_target_files = int(...) # YOUR CODE HERE -> use `train_files_percentage` here, make sure it is integer
+train_image_files = image_files[ ... ] # YOUR CODE HERE
+train_target_files = target_files[ ... ] # YOUR CODE HERE
+val_image_files = image_files[ ... ] # YOUR CODE HERE
+val_target_files = target_files[ ... ] # YOUR CODE HERE
+
+assert all(
+    [i.name == j.name for i, j in zip(train_image_files, train_target_files)]
+), "Train files do not match"
+assert all(
+    [i.name == j.name for i, j in zip(val_image_files, val_target_files)]
+), "Val files do not match"
+
+print(f"Train dataset size: {len(train_image_files)}")
+print(f"Validation dataset size: {len(val_image_files)}")
+
+# Read the test files
+test_image_files = list(test_image_path.rglob("*.tif"))
+test_target_files = list(test_target_path.rglob("*.tif"))
+print(f"Number of test files: {len(test_image_files)}")
+
+
+# %% tags=["solution"]
+train_files_percentage = 0.8
+
+# set seed for reproducibility
+seed = 42
+np.random.seed(seed)
+
+# shuffle the file lists using the sample shuffled indices
+shuffled_indices = np.random.permutation(len(image_files))
+image_files = np.array(image_files)[shuffled_indices]
+target_files = np.array(target_files)[shuffled_indices]
+
+assert all(
+    [i.name == j.name for i, j in zip(image_files, target_files)]
+), "Files do not match"
+
+tot_num_image_files = len(image_files)
+tot_num_target_files = len(target_files)
+num_train_image_files = int(train_files_percentage * tot_num_image_files)
+num_train_target_files = int(train_files_percentage * tot_num_target_files)
+train_image_files = image_files[:num_train_image_files]
+train_target_files = target_files[:num_train_target_files]
+val_image_files = image_files[num_train_image_files:]
+val_target_files = target_files[num_train_target_files:]
+
 assert all(
     [i.name == j.name for i, j in zip(train_image_files, train_target_files)]
 ), "Train files do not match"
@@ -655,15 +719,43 @@ val_dataloader = DataLoader(val_dataset, batch_size=8, shuffle=False)
 # %% [markdown] tags=[]
 # ### Instantiate the model
 #
-# We'll be using the model from the previous exercise, so we need to load the relevant module.
-
-# %% tags=[]
-# Load the model
-model = UNet(depth=2, in_channels=1, out_channels=1)
-# NOTE: 1 grayscale image in, 1 grayscale image out
+# We'll be using the UNet model from the previous exercise, so we need to load the relevant module.
 
 # %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 3: Loss function</h3>
+# <div class="alert alert-block alert-info"><h3>Task 3: Instantiate a UNet for supervised denoising</h3>
+#
+# Define a UNet suitable for the denoising task.
+# Recall that in denoising we input a single noisy grayscale (i.e., single-channel) image and we try to predict a single clean grayscale image.
+# Also note that denoising is a *regression* task, i.e., the output values are pixel intensities, not probabilities or class labels.
+# Therefore, do we need a final activation for the task? If yes, which one?
+#
+# </div>
+
+# %% tags=["task"]
+# TODO: Define the UNet model for denoising
+# NOTE: 1 grayscale image in, 1 grayscale image out
+model = UNet(
+    depth=...,
+    in_channels=...,
+    out_channels=...,
+    num_fmaps=...,
+    final_activation=...
+)
+
+# %% tags=["solution"]
+# Define the UNet model for denoising
+# NOTE: 1 grayscale image in, 1 grayscale image out
+model = UNet(
+    depth=2,
+    in_channels=1,
+    out_channels=1,
+    num_fmaps=64,
+    final_activation=None
+)
+
+
+# %% [markdown] tags=[]
+# <div class="alert alert-block alert-info"><h3>Task 4: Loss function</h3>
 #
 # CARE trains image to image (output vs. ground truth, i.e., noisy vs. clean), therefore we need a different loss function compared to the segmentation task (image to mask). 
 # For example, we may want to somehow measure the pixel-wise difference in intensity between the output and the ground truth.
@@ -680,7 +772,7 @@ loss = ... #### YOUR CODE HERE ####
 loss = torch.nn.MSELoss()
 
 # %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 4: Optimizer</h3>
+# <div class="alert alert-block alert-info"><h3>Task 5: Optimizer</h3>
 #
 # Similarly, define the optimizer. No need to be too inventive here!
 #
@@ -704,7 +796,7 @@ optimizer = torch.optim.Adam(
 #
 
 # %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 5: Launch Tensorboard</h3>
+# <div class="alert alert-block alert-info"><h3>Task 6: Launch Tensorboard</h3>
 #
 # We'll monitor the training of all models in 05_image_restoration using Tensorboard.
 # This is a program that plots the training and validation loss of networks as they train,
@@ -833,7 +925,7 @@ test_dataset = CAREDataset(
 test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # %% [markdown] tags=[]
-# <div class="alert alert-block alert-info"><h3>Task 6: Denormalization</h3>
+# <div class="alert alert-block alert-info"><h3>Task 7: Denormalization</h3>
 #
 # CARE is an image to image model. If we feed it normalized images and use normalized targets for training, it will output normalized images.
 # Therefore, we can map the model output back to the original intensity range by reverting the normalization operation, i.e., **denormalizing**.
@@ -895,7 +987,7 @@ def denormalize(
 
 
 # %% [markdown]
-# <div class="alert alert-block alert-info"><h3>Task 7: Predict using the correct mean/std</h3>
+# <div class="alert alert-block alert-info"><h3>Task 8: Predict using the correct mean/std</h3>
 #
 # In Part 1 we normalized the inputs and the targets before feeding them into the model. 
 # This means that the model will output normalized clean images. 
