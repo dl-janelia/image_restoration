@@ -177,3 +177,6 @@ cython_debug/
 data/
 ckpts/
 noise_models/
+
+# uv virtual environments created by setup.sh
+.venvs/
