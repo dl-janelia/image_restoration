@@ -1,63 +1,54 @@
 #!/bin/bash
 
+# ----------------------------------------------------------------------
+# Ensure uv is installed
+# ----------------------------------------------------------------------
+if ! command -v uv &> /dev/null; then
+    echo "uv not found, installing..."
+    wget -qO- https://astral.sh/uv/install.sh | sh
+    # the installer drops uv in ~/.local/bin; make it available in this session
+    source "$HOME/.local/bin/env" 2>/dev/null || export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "uv is already installed: $(uv --version)"
+fi
+
 # create environment for MicroSplit
 echo "======================================"
 echo "Creating environment for MicroSplit..."
 echo "======================================"
-ENV="05_image_restoration_microsplit"
-conda create -y -n "$ENV" python=3.11
-source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
-conda activate "$ENV"
+ENV="$HOME/.virtualenvs/05_image_restoration_microsplit"
+uv venv --python 3.11 "$ENV"
+source "$ENV/bin/activate"
 
-# check that the environment was activated
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    echo "Environment activated successfully"
-else
-    echo "Failed to activate the environment"
-fi
+uv pip install \
+    "git+https://github.com/CAREamics/MicroSplit-reproducibility.git" \
+    tensorboard \
+    "setuptools<81" \
+    ipykernel
+python -m ipykernel install --user --name "05_image_restoration_microsplit" \
+    --display-name "05 Image Restoration (MicroSplit)"
 
-# Further instructions that should only run if the environment is active
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    pip install git+https://github.com/CAREamics/MicroSplit-reproducibility.git
-    
-    # packages to run jupyter notebooks
-    pip install tensorboard
-    pip install "setuptools<81"  # setuptools>=81 removes pkg_resources, required by tensorboard<=2.20
-    pip install ipykernel
-    python -m ipykernel install --user --name "05_image_restoration"
-fi
-
+deactivate
 
 # create environment for CARE & N2V exercises
 echo "======================================================"
-echo "Creating environment for CARE, Noise2Void and COSDD..."
+echo "Creating environment for CARE and Noise2Void..."
 echo "======================================================"
-ENV="05_image_restoration"
-conda create -y -n "$ENV" python=3.11
-source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
-conda activate "$ENV"
+ENV="$HOME/.virtualenvs/05_image_restoration"
+uv venv --python 3.11 "$ENV"
+source "$ENV/bin/activate"
 
-# check that the environment was activated
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    echo "Environment activated successfully"
-else
-    echo "Failed to activate the environment"
-fi
+uv pip install \
+    careamics \
+    careamics_portfolio \
+    "git+https://github.com/dl-janelia/dlmbl-unet" \
+    tensorboard \
+    "setuptools<81" \
+    ipykernel
+python -m ipykernel install --user --name "05_image_restoration" \
+    --display-name "05 Image Restoration (CARE/N2V)"
 
-# Further instructions that should only run if the environment is active
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    pip install careamics
-    pip install careamics_portfolio
-    pip install git+https://github.com/dl-janelia/dlmbl-unet
-    pip install tensorboard
-    pip install "setuptools<81"  # setuptools>=81 removes pkg_resources, required by tensorboard<=2.20
-
-    # packages to run jupyter notebooks
-    pip install ipykernel
-    python -m ipykernel install --user --name "05_image_restoration"
-fi
-
-# Download the data
+# Download the data (the 05_image_restoration env is still active)
 # CARE + N2V
 if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.unzip" ]; then
     echo "Downloading CARE + N2V data..."
@@ -65,3 +56,5 @@ if [ ! -d "data/denoising-N2V_SEM.unzip" ] || [ ! -d "data/denoising-CARE_U2OS.u
 else
     echo "CARE, N2V data already exists, skipping download."
 fi
+
+deactivate

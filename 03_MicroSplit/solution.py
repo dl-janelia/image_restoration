@@ -54,7 +54,7 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration_microsplit</code>
+# Set your python kernel to <code>05 Image Restoration (MicroSplit)</code>
 # </div>
 
 # %% tags=[]
@@ -63,7 +63,7 @@ import careamics
 
 assert careamics.__version__ == "0.0.12", (
     f"Expected careamics version 0.0.12, but found {careamics.__version__}. "
-    "Please make sure your kernel is set to `05_image_restoration_microsplit`."
+    "Please make sure your kernel is set to `05 Image Restoration (MicroSplit)`."
 )
 print(f"careamics version {careamics.__version__} is correctly installed.")
 
@@ -427,7 +427,7 @@ trainer.fit(
 # In this case, you have to open a terminal and run:
 #
 # ```
-# conda activate 05_image_restoration_microsplit
+# source ~/.virtualenvs/05_image_restoration_microsplit/bin/activate
 # tensorboard --logdir 03_MicroSplit/tb_logs/
 # ```
 

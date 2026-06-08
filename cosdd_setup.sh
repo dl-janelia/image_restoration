@@ -1,39 +1,45 @@
 #!/bin/bash
 
+# ----------------------------------------------------------------------
+# Ensure uv is installed
+# ----------------------------------------------------------------------
+if ! command -v uv &> /dev/null; then
+    echo "uv not found, installing..."
+    wget -qO- https://astral.sh/uv/install.sh | sh
+    # the installer drops uv in ~/.local/bin; make it available in this session
+    source "$HOME/.local/bin/env" 2>/dev/null || export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "uv is already installed: $(uv --version)"
+fi
+
+# create environment for COSDD
 echo "======================================"
 echo "Creating environment for COSDD..."
 echo "======================================"
-ENV="05_image_restoration_COSDD"
-conda create -y -n "$ENV" python=3.11
-source "$(conda info --base)/etc/profile.d/conda.sh" # init conda
-conda activate "$ENV"
+ENV="$HOME/.virtualenvs/05_image_restoration_COSDD"
+uv venv --python 3.11 "$ENV"
+source "$ENV/bin/activate"
 
-# check that the environment was activated
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    echo "Environment activated successfully"
-else
-    echo "Failed to activate the environment"
-fi
+uv pip install torch torchvision
+uv pip install lightning ipykernel matplotlib tifffile scikit-learn scikit-image tensorboard ipywidgets
+python -m ipykernel install --user --name "05_image_restoration_COSDD" \
+    --display-name "05 Image Restoration (COSDD)"
 
-# Further instructions that should only run if the environment is active
-if [[ "$CONDA_DEFAULT_ENV" == "$ENV" ]]; then
-    pip install torch torchvision
-    pip install lightning ipykernel matplotlib tifffile scikit-learn scikit-image tensorboard ipywidgets
-
-    # Clone the COSDD repository
+# Clone the COSDD repository
+if [ ! -d "04_bonus_COSDD/COSDD" ]; then
     git clone https://github.com/krulllab/COSDD.git 04_bonus_COSDD/COSDD
-    cd 04_bonus_COSDD/COSDD
-    git checkout eae0b6c
+    git -C 04_bonus_COSDD/COSDD checkout eae0b6c
+else
+    echo "COSDD repository already exists, skipping clone."
 fi
+
+deactivate
 
 # other preparations
-cd 04_bonus_COSDD/
-if [ ! -d "checkpoints" ]; then
+if [ ! -d "04_bonus_COSDD/checkpoints" ]; then
     echo "Adding pretrained checkpoint..."
-    mkdir checkpoints
+    mkdir 04_bonus_COSDD/checkpoints
 fi
-cd checkpoints/
-if [ ! -d "mito-pretrained" ]; then
-    cp -r /mnt/efs/dl_jrc/data/05_image_restoration/COSDD/mito-pretrained .
+if [ ! -d "04_bonus_COSDD/checkpoints/mito-pretrained" ]; then
+    cp -r /mnt/efs/dl_jrc/data/05_image_restoration/COSDD/mito-pretrained 04_bonus_COSDD/checkpoints/
 fi
-cd ../../

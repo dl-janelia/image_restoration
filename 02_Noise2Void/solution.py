@@ -54,7 +54,7 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration</code>
+# Set your python kernel to <code>05 Image Restoration (CARE/N2V)</code>
 # </div>
 
 # %% tags=[]
@@ -273,7 +273,7 @@ careamist.train(train_data=train_images_path, val_data=validation_images_path)
 #
 # Remember the configuration? Didn't we set `logger` to `tensorboard`? Then we can visualize the loss curve!
 #
-# Open Tensorboard in the terminal (check Task 5 in 01_CARE) to monitor training. 
+# Open Tensorboard in the terminal (check Task 6 in 01_CARE) to monitor training. 
 # Logs for this model are stored in the `02_Noise2Void/tb_logs/` folder.
 # </div>
 #
