@@ -83,6 +83,9 @@ low_snr, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
 
+# aggregate into a tensor
+low_snr = torch.stack(low_snr).float() # (S, C, Y, X)
+
 # %% tags=["solution"]
 # load the data
 paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
@@ -92,6 +95,9 @@ n_dimensions = 2
 low_snr, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
+
+# aggregate into a tensor
+low_snr = torch.stack(low_snr).float() # (S, C, Y, X)
 
 # %% [markdown] tags=[]
 # <div class="alert alert-info">
@@ -503,11 +509,12 @@ test_data, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
 test_data = test_data[:3]
+test_data = torch.stack(test_data).float()
 print(f"Test data size: {test_data.size()}")
 
 predict_batch_size = 1
 
-predict_set = utils.PredictDataset(low_snr)
+predict_set = utils.PredictDataset(test_data)
 predict_loader = torch.utils.data.DataLoader(
     predict_set,
     batch_size=predict_batch_size,
@@ -599,7 +606,7 @@ predictor = pl.Trainer(
 
 # %% tags=[]
 use_direct_denoiser = False
-n_samples = 7
+n_samples = 3
 
 hub.direct_pred = use_direct_denoiser
 samples = []

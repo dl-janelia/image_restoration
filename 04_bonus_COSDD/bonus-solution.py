@@ -43,6 +43,9 @@ low_snr, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
 
+# aggregate into a tensor
+low_snr = torch.stack(low_snr).float() # (S, C, Y, X)
+
 # %% [markdown]
 # <div class="alert alert-info">
 #
