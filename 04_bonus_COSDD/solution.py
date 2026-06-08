@@ -2,6 +2,13 @@
 # ruff: noqa: F811
 # %% [markdown] tags=[]
 # # Exercise: Training COSDD
+
+# %% [markdown] tags=[]
+# <div class="alert alert-danger">
+# Before running the exercise, run <code>source cosdd_setup.sh</code> to create the environment and install the necessary dependencies.
+# </div>
+
+# %% [markdown] tags=[]
 #
 # In this section, we will train a COSDD model to remove row correlated and signal-dependent imaging noise. 
 # You will load noisy data and examine the noise for spatial correlation, then initialise a model and monitor its training.
@@ -13,7 +20,7 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration</code>
+# Set your python kernel to <code>05_image_restoration_COSDD</code>
 # </div>
 
 # %% tags=[]
@@ -68,7 +75,7 @@ assert torch.cuda.is_available()
 
 # %% tags=["task"]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = ... # Enter the data's file name here
 axes = "SYX"
 n_dimensions = 2
@@ -76,15 +83,21 @@ low_snr, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
 
+# aggregate into a tensor
+low_snr = torch.stack(low_snr).float() # (S, C, Y, X)
+
 # %% tags=["solution"]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = "mito-confocal-lowsnr.tif"
 axes = "SYX"
 n_dimensions = 2
 low_snr, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
+
+# aggregate into a tensor
+low_snr = torch.stack(low_snr).float() # (S, C, Y, X)
 
 # %% [markdown] tags=[]
 # <div class="alert alert-info">
@@ -269,7 +282,7 @@ datamodule = utils.DataModule(
 #
 # `ar_decoder` The autoregressive decoder that will decode latent variables into a distribution over the input.
 # * `noise_direction` (str): Axis along which noise is correlated: `"x"`, `"y"` or `"z"`. This needs to match the orientation of the noise structures we revealed in the autocorrelation plot in Task 1.2.
-# * `n_gaussians` (int): Number of components in Gaussian mixture used to model data.
+# * `n_components` (int): Number of components in Gaussian mixture used to model data.
 #
 # `direct_denoiser` The U-Net that can optionally be trained to predict the MMSE or MMAE of the denoised images. This will slow training slightly but massively speed up inference and is worthwile if you have an inference dataset in the gigabytes. See [this paper](https://arxiv.org/abs/2310.18116). Enable or disable the direct denoiser by setting `use_direct_denoiser` to `True` or `False`.
 # * `loss_fn` (str): Whether to use `"L1"` or `"MSE"` loss function to predict either the mean or pixel-wise median of denoised images respectively.
@@ -281,7 +294,7 @@ datamodule = utils.DataModule(
 s_code_channels = 64
 n_layers = 6
 noise_direction = ...  # 
-n_gaussians = 10
+n_components = 10
 use_direct_denoiser = ...  # 
 dd_loss_fn = "MSE"
 graident_checkpoints = False
@@ -299,7 +312,7 @@ config = {
     "hyper-parameters": {
         "s-code-channels": s_code_channels,
         "number-layers": n_layers,
-        "number-gaussians": n_gaussians,
+        "number-components": n_components,
         "noise-direction": noise_direction,
     },
 }
@@ -324,7 +337,7 @@ hub = Hub(
 s_code_channels = 64
 n_layers = 6
 noise_direction = "x"
-n_gaussians = 10
+n_components = 10
 use_direct_denoiser = True
 dd_loss_fn = "MSE"
 graident_checkpoints = False
@@ -342,7 +355,7 @@ config = {
     "hyper-parameters": {
         "s-code-channels": s_code_channels,
         "number-layers": n_layers,
-        "number-gaussians": n_gaussians,
+        "number-components": n_components,
         "noise-direction": noise_direction,
     },
 }
@@ -393,7 +406,7 @@ hub = Hub(
 #
 # There will also be an IMAGES tab. This shows noisy input images from the validation set and some outputs. These will be two randomly sampled denoised images (sample 1 and sample 2), the average of ten denoised images (mmse) and if the direct denoiser is enabled, its output (direct estimate).
 #
-# If noise has not been fully removed from the output images, try increasing `n_gaussians` argument of the AR decoder. This will give it more flexibility to model complex noise characteristics. However, setting the value too high can lead to unstable training. Typically, values from 3 to 5 work best.
+# If noise has not been fully removed from the output images, try increasing `n_components` argument of the AR decoder. This will give it more flexibility to model complex noise characteristics. However, setting the value too high can lead to unstable training. Typically, values from 3 to 5 work best.
 #
 # Note that the trainer is set to train for only 15 minutes in this example. Remove the line with `max_time` to train fully.
 
@@ -488,7 +501,7 @@ torch.cuda.empty_cache()
 
 # %% tags=[]
 # load the data
-paths = "/mnt/efs/aimbl_2025/data/"
+paths = "/mnt/efs/dl_jrc/data/05_image_restoration/COSDD/"
 patterns = "mito-confocal-lowsnr.tif"
 axes = "SYX"
 n_dimensions = 2
@@ -496,11 +509,12 @@ test_data, original_sizes = utils.load_data(
     paths=paths, patterns=patterns, axes=axes, n_dimensions=n_dimensions
 )
 test_data = test_data[:3]
+test_data = torch.stack(test_data).float()
 print(f"Test data size: {test_data.size()}")
 
 predict_batch_size = 1
 
-predict_set = utils.PredictDataset(low_snr)
+predict_set = utils.PredictDataset(test_data)
 predict_loader = torch.utils.data.DataLoader(
     predict_set,
     batch_size=predict_batch_size,
@@ -524,7 +538,9 @@ predict_loader = torch.utils.data.DataLoader(
 # %% tags=["task"]
 model_name = ...  ### Insert the model name here
 checkpoint_path = os.path.join("checkpoints", model_name)
-# checkpoint_path = "checkpoints/mito-confocal-pretrained" ### Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+
+# TODO: Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# checkpoint_path = "checkpoints/mito-pretrained"
 
 with open(os.path.join(checkpoint_path, "training-config.yaml")) as f:
     train_cfg = yaml.load(f, Loader=yaml.FullLoader)
@@ -552,7 +568,8 @@ predictor = pl.Trainer(
 # %% tags=["solution"]
 model_name = "mito-confocal"
 checkpoint_path = os.path.join("checkpoints", model_name)
-# checkpoint_path = "checkpoints/mito-confocal-pretrained" ### Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# TODO: Once you reach the bottom of the notebook, return here and uncomment this line to see the pretrained model
+# checkpoint_path = "checkpoints/mito-pretrained"
 
 with open(os.path.join(checkpoint_path, "training-config.yaml")) as f:
     train_cfg = yaml.load(f, Loader=yaml.FullLoader)
@@ -589,7 +606,7 @@ predictor = pl.Trainer(
 
 # %% tags=[]
 use_direct_denoiser = False
-n_samples = 7
+n_samples = 3
 
 hub.direct_pred = use_direct_denoiser
 samples = []
