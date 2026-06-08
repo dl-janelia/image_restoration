@@ -7,7 +7,7 @@
 
 # %% [markdown]
 # <div class="alert alert-danger">
-# Set your python kernel to <code>05_image_restoration_COSDD</code>
+# Set your python kernel to <code>05 Image Restoration (COSDD)</code>
 # </div>
 
 # %%

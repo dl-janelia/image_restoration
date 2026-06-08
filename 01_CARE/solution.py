@@ -37,7 +37,7 @@
 
 # %% [markdown] tags=[]
 # <div class="alert alert-danger">
-#   Set your python kernel to <code>05_image_restoration</code>
+#   Set your python kernel to <code>05 Image Restoration (CARE/N2V)</code>
 # </div>
 
 
@@ -808,7 +808,7 @@ optimizer = torch.optim.Adam(
 # 2) Open a terminal and run:
 #
 # ```bash
-# conda activate 05_image_restoration
+# source ~/.virtualenvs/05_image_restoration/bin/activate
 # tensorboard --logdir 01_CARE/runs/
 # ```
 #

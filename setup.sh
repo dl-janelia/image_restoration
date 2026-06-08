@@ -16,7 +16,7 @@ fi
 echo "======================================"
 echo "Creating environment for MicroSplit..."
 echo "======================================"
-ENV=".venvs/05_image_restoration_microsplit"
+ENV="$HOME/.virtualenvs/05_image_restoration_microsplit"
 uv venv --python 3.11 "$ENV"
 source "$ENV/bin/activate"
 
@@ -25,15 +25,16 @@ uv pip install \
     tensorboard \
     "setuptools<81" \
     ipykernel
-python -m ipykernel install --user --name "05_image_restoration"
+python -m ipykernel install --user --name "05_image_restoration_microsplit" \
+    --display-name "05 Image Restoration (MicroSplit)"
 
 deactivate
 
 # create environment for CARE & N2V exercises
 echo "======================================================"
-echo "Creating environment for CARE, Noise2Void and COSDD..."
+echo "Creating environment for CARE and Noise2Void..."
 echo "======================================================"
-ENV=".venvs/05_image_restoration"
+ENV="$HOME/.virtualenvs/05_image_restoration"
 uv venv --python 3.11 "$ENV"
 source "$ENV/bin/activate"
 
@@ -44,7 +45,8 @@ uv pip install \
     tensorboard \
     "setuptools<81" \
     ipykernel
-python -m ipykernel install --user --name "05_image_restoration"
+python -m ipykernel install --user --name "05_image_restoration" \
+    --display-name "05 Image Restoration (CARE/N2V)"
 
 # Download the data (the 05_image_restoration env is still active)
 # CARE + N2V
